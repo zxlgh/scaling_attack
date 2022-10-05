@@ -1,0 +1,11 @@
+matplotlib==3.0.3
+pandas==0.24.2
+Pillow~=6.0.0
+torch==1.7.0+cu110
+torchvision==0.8.1+cu110
+tqdm==4.64.1
+
+numpy~=1.16.3
+cvxpy~=1.0.21
+opencv-python~=4.1.0.25
+scikit-image~=0.15.0

@@ -1,25 +1,27 @@
+import cv2 as cv
 from torchvision import transforms
+import matplotlib.pyplot as plt
 
 from datasets import CustomDataset
 from models import get_model
 from train_test import Trainer
-import cv2 as cv
+from scale.scaler import Algorithm
+from scale.pillow_scaler import PillowScaler
+from scale.attack import Attack
+from utils.load_image import load_image_example
 
 if __name__ == '__main__':
 
-    data_transform = {
-        "train": transforms.Compose([transforms.Resize((114, 114), interpolation=cv.INTER_NEAREST),
-                                     transforms.RandomHorizontalFlip(),
-                                     transforms.RandomAffine(30, (0.1, 0.1)),
-                                     transforms.ToTensor()]),
-        "test": transforms.Compose([transforms.Resize((114, 114), interpolation=cv.INTER_NEAREST),
-                                    transforms.ToTensor()])
-    }
-    customData = CustomDataset(data_transform['train'], data_transform['test'])
-    train_loader = customData.get_loader(root='/home/pub_benign/train', batch=128, train=True)
-    test_loader = customData.get_loader(root='/home/pub_benign/test', batch=256, train=False)
+    src, tar = load_image_example()
+    scaler_approach = PillowScaler(algorithm=Algorithm.NEAREST,
+                                   src_image_shape=src.shape,
+                                   tar_image_shape=tar.shape)
+    attacker = Attack()
+    att = attacker.attack(src, tar, scaler_approach)
+    plt.subplot(121)
+    plt.imshow(att)
+    plt.subplot(122)
+    res = scaler_approach.scale_image_with(att, tar.shape[0], tar.shape[1])
+    plt.imshow(res)
+    plt.show()
 
-    model = get_model('vgg16', out_feature=60, load_dict=None)
-    trainer = Trainer(100, model, train_loader, test_loader, best_acc=0.8,
-                      save_model=r'./vgg_benign.pth', plot=None)
-    trainer.train()

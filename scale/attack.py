@@ -1,34 +1,53 @@
 import numpy as np
 import cvxpy as cp
+import typing
+
+from scale.scaler import Scaler
 
 
 class Attack:
 
-    def attack(self, src, tar, scaler):
-        if src.dtype != np.uint8:
+    def __init__(self, src: np.ndarray,
+                 tar: typing.List[np.ndarray],
+                 scaler: typing.List[Scaler]):
+        self.src = src
+        self.tar = tar
+        self.scaler = scaler
+
+    def attack(self):
+        if self.src.dtype != np.uint8:
             raise Exception('Source or target image have dtype != np.uint8')
 
-        att_image = np.zeros(src.shape)
+        att_image = np.zeros(self.src.shape)
         # There is not work for gray image.
-        for ch in range(src.shape[2]):
+        for ch in range(self.src.shape[2]):
             print(f'Channel {ch}...')
-            att_ch = self._attack_on_one_channel(ch=ch, src=src, tar=tar, scaler=scaler)
+            att_ch = self._attack_on_one_channel(ch=ch)
             att_image[:, :, ch] = att_ch
 
         att_image = att_image.astype(np.uint8)
         return att_image
 
-    @staticmethod
-    def _attack_on_one_channel(ch, src,  tar, scaler):
+    def _attack_on_one_channel(self, ch):
+        """
+        solving the optimization problem by cvxpy lib.
+        :param ch: channel of image
+        :return:
+        """
 
-        src_image = src[:, :, ch]
-        target_image = tar[:, :, ch]
+        src_image = self.src[:, :, ch]
+
         delta = cp.Variable(src_image.shape)
         att_img = (src_image + delta)
 
-        cl = scaler.cl_matrix
-        cr = scaler.cr_matrix
-        obj = cp.pnorm(cl @ att_img @ cr - target_image, 2) + 0.3 * cp.pnorm(delta, 2) + 0.5 * cp.norm(delta, 'inf')
+        obj = cp.Constant(0)
+        for tar, scaler in zip(self.tar, self.scaler):
+            target_image = tar[:, :, ch]
+            cl = scaler.cl_matrix
+            cr = scaler.cr_matrix
+            obj += cp.pnorm(cl @ att_img @ cr - target_image, 2)
+
+        obj += cp.pnorm(delta, 2)
 
         constr1 = att_img <= 255
         constr2 = att_img >= 0

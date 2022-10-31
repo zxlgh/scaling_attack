@@ -10,4 +10,4 @@ cvxpy~=1.0.21
 opencv-python~=4.1.0.25
 scikit-image~=0.15.0
 
-# have to install lib.sm.6
+# To use the opencv-python, lib.sm.6 have to be installed.

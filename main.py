@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import shutil
 import random
+import numpy as np
+import torch
 
 from models import get_model
 from datasets import get_loader
@@ -52,35 +54,49 @@ if __name__ == '__main__':
     # trainer = Trainer(100, model, train_loader, test_loader, test_backdoor, test_scale, plot='resnet_lfw.eps')
     # trainer.train()
 
-    src, tar = load_image_from_disk(r'/home/lfw/train/0', r'/home/lfw/train/1')
-    scaler_1 = PillowScaler(Algorithm.NEAREST, src.shape, tar[0].shape)
-    scaler_2 = PillowScaler(Algorithm.NEAREST, src.shape, tar[1].shape)
-    scaler_3 = PillowScaler(Algorithm.NEAREST, src.shape, tar[2].shape)
-    attack = Attack(src, tar, [scaler_1, scaler_2, scaler_3])
-    att = attack.attack()
-    res_1 = scaler_1.scale_image_with(att, 64, 64)
+    # src, tar = load_image_example()
+    # scaler_1 = PillowScaler(Algorithm.NEAREST, src.shape, tar[0].shape)
+    # scaler_2 = PillowScaler(Algorithm.NEAREST, src.shape, tar[1].shape)
+    # scaler_3 = PillowScaler(Algorithm.NEAREST, src.shape, tar[2].shape)
+    # attack = Attack(src, tar, [scaler_1, scaler_2, scaler_3])
+    # att = attack.attack()
+    # res_1 = scaler_1.scale_image_with(att, 64, 64)
     # res_2 = scaler_2.scale_image_with(att, 96, 96)
     # res_3 = scaler_3.scale_image_with(att, 114, 114)
-    plt.imshow(src)
-    plt.show()
-    plt.imshow(att)
-    plt.show()
-    plt.imshow(res_1)
-    plt.show()
+    # plt.imshow(src)
+    # plt.show()
+    # plt.imshow(att)
+    # plt.show()
+    # plt.imshow(res_1)
+    # plt.show()
 
-    # src, tar = load_image_from_disk(r'/home/lfw/train/0', r'/home/lfw/train/1')
-    # scaler = PillowScaler(Algorithm.NEAREST, (250, 250), (114, 114))
-    # for i in range(15):
-    #     attack = Attack(src[i], [tar[i]], [scaler])
-    #     att = attack.attack()
-    #     img = Image.fromarray(att)
-    #     img.save(r'/home/lfw_scaling/0/'+str(i)+'.jpg')
-    #     res = scaler.scale_image_with(att, 114, 114)
-    #     plt.subplot(121)
-    #     plt.imshow(att)
-    #     plt.subplot(122)
-    #     plt.imshow(res)
-    #     plt.show()
+    src, tar = load_image_from_disk(r'/home/scaling_attack/cifar/train/0', r'/home/scaling_attack/cifar/train/9')
+    scaler_1 = PillowScaler(Algorithm.NEAREST, (224, 224), (64, 64))
+    scaler_2 = PillowScaler(Algorithm.CUBIC, (224, 224), (64, 64))
+    scaler_3 = PillowScaler(Algorithm.LANCZOS, (224, 224), (64, 64))
+    sim = []
+    for i in range(10):
+        attack = Attack(src[i], tar[i], [scaler_1, scaler_3])
+        att = attack.attack()
+        a = np.array(src[i], dtype=float)
+        b = np.array(att, dtype=float)
+        sim.append(round(torch.cosine_similarity(torch.tensor(a.flatten()), torch.tensor(b.flatten()), dim=0).item(), 4))
+        print(sim)
+        # img = Image.fromarray(att)
+        res_1 = scaler_1.scale_image_with(att, 64, 64)
+        # res_2 = scaler_2.scale_image_with(att, 64, 64)
+        res_3 = scaler_3.scale_image_with(att, 64, 64)
+        plt.subplot(151)
+        plt.imshow(src[i])
+        plt.subplot(152)
+        plt.imshow(att)
+        plt.subplot(153)
+        plt.imshow(res_1)
+        plt.subplot(155)
+        plt.imshow(res_3)
+        # plt.subplot(155)
+        # plt.imshow(res_3)
+        plt.show()
 
     # path = r'/home/lfw/train/'
     # dirs = os.listdir(path)
@@ -105,3 +121,19 @@ if __name__ == '__main__':
     #         os.makedirs(tarDir)
     #     moveFile(fileDir)  # 从每个子类别开始逐个划分
 
+    # import os
+    #
+    # path_a = '/home/scaling_attack/'
+    #
+    #
+    # def walk(dirname):
+    #     for name in os.listdir(dirname):
+    #         path = os.path.join(dirname, name)
+    #         if os.path.isfile(path):
+    #             if name.startswith('.'):
+    #                 print(name)
+    #                 os.remove(os.path.join(dirname, name))
+    #         else:
+    #             walk(path)
+    #
+    # walk(path_a)

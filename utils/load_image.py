@@ -42,7 +42,7 @@ def load_image_from_disk(path_src, path_tar1, path_tar2, path_tar3):
     for i in range(3):
         src = cv.imread(os.path.join(path_src, files_src[i]))
         src = cv.cvtColor(src, cv.COLOR_BGR2RGB)
-        src = cv.resize(src, (448, 448), interpolation=cv.INTER_AREA)
+        src = cv.resize(src, (224, 224), interpolation=cv.INTER_AREA)
         im_src.append(src)
         tar = []
         im = cv.imread(os.path.join(path_tar1, files_tar1[i]))

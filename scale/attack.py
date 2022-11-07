@@ -8,7 +8,7 @@ from scale.scaler import Scaler
 class Attack:
 
     def __init__(self, src: np.ndarray,
-                 tar: np.ndarray,
+                 tar: typing.List[np.ndarray],
                  scaler: typing.List[Scaler]):
         self.src = src
         self.tar = tar
@@ -36,22 +36,22 @@ class Attack:
         """
 
         src_image = self.src[:, :, ch]
-        tar_image = self.tar[:, :, ch]
+
         delta = cp.Variable(src_image.shape)
         att_img = (src_image + delta)
 
-        obj = cp.Constant(0)
-        for s in self.scaler:
-            cl = s.cl_matrix
-            cr = s.cr_matrix
-            obj += cp.pnorm(cl @ att_img @ cr - tar_image, 2)
+        obj = cp.pnorm(delta, 2)
+        constr = []
+        for i, (tar, scaler) in enumerate(zip(self.tar, self.scaler)):
+            target_image = tar[:, :, ch]
+            cl = scaler.cl_matrix
+            cr = scaler.cr_matrix
+            obj += (i + 1) * cp.pnorm(cl @ att_img @ cr - target_image, 2)
 
-        obj += cp.pnorm(delta, 2)
+        constr.append(att_img <= 255)
+        constr.append(att_img >= 0)
 
-        constr1 = att_img <= 255
-        constr2 = att_img >= 0
-
-        prob = cp.Problem(cp.Minimize(obj), [constr1, constr2])
+        prob = cp.Problem(cp.Minimize(obj), constr)
 
         try:
             prob.solve()
@@ -62,7 +62,6 @@ class Attack:
                 prob.solve(solver=cp.ECOS)
             except prob.status != cp.OPTIMAL:
                 print('Can not find the optim answer with ECOS solver.')
-
         assert delta.value is not None
         attack_image_all = src_image + delta.value
         attack_image_all = np.clip(np.round(attack_image_all), 0, 255)

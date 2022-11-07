@@ -30,26 +30,33 @@ def load_image_from_disk(path_src, path_tar):
     :return:
     """
     files_src = os.listdir(path_src)
-    files_src = files_src[0]
+    files_src = files_src[:10]
     files_tar = os.listdir(path_tar)
-    files_tar = files_tar[0]
+    files_tar = files_tar[:10]
     im_src = []
     im_tar = []
+    for i in range(10):
 
-    im = cv.imread(path_src +os.sep + files_src)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (1024, 1024), interpolation=cv.INTER_CUBIC)
-    im_src = im
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (64, 64), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (96, 96), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (114, 114), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
+        im = cv.imread(os.path.join(path_src, files_src[i]))
+        im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
+        im = cv.resize(im, (224, 224), interpolation=cv.INTER_CUBIC)
+        im_src.append(im)
+        tar = []
+        im = cv.imread(os.path.join(path_tar, files_tar[i]))
+        im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
+        im = cv.resize(im, (64, 64), interpolation=cv.INTER_CUBIC)
+        tar.append(im)
+        im = cv.imread(os.path.join(path_tar, files_tar[i]))
+        im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
+        im = cv.resize(im, (96, 96), interpolation=cv.INTER_CUBIC)
+        tar.append(im)
+        im = cv.imread(os.path.join(path_tar, files_tar[i]))
+        im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
+        im = cv.resize(im, (114, 114), interpolation=cv.INTER_CUBIC)
+        tar.append(im)
+        # im = cv.imread(os.path.join(path_tar, files_tar[i]))
+        # im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
+        # im = cv.resize(im, (144, 144), interpolation=cv.INTER_CUBIC)
+        # tar.append(im)
+        im_tar.append(tar)
     return im_src, im_tar

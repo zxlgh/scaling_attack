@@ -30,9 +30,7 @@ def load_image_from_disk(path_src, path_tar):
     :return:
     """
     files_src = os.listdir(path_src)
-    files_src = files_src[:3]
     files_tar = os.listdir(path_tar)
-    files_tar = files_tar[:3]
 
     src = []
     im = cv.imread(os.path.join(path_src, files_src[0]))
@@ -41,19 +39,19 @@ def load_image_from_disk(path_src, path_tar):
     src.append(im)
     im = cv.imread(os.path.join(path_src, files_src[0]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (1024, 1024), interpolation=cv.INTER_AREA)
+    # im = cv.resize(im, (1024, 1024), interpolation=cv.INTER_AREA)
     src.append(im)
 
     tar = []
-    im = cv.imread(os.path.join(path_tar, files_tar[0]))
+    im = cv.imread(os.path.join(path_tar, files_tar[1]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (64, 64), interpolation=cv.INTER_AREA)
     tar.append(im)
-    im = cv.imread(os.path.join(path_tar, files_tar[0]))
+    im = cv.imread(os.path.join(path_tar, files_tar[2]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (96, 96), interpolation=cv.INTER_AREA)
     tar.append(im)
-    im = cv.imread(os.path.join(path_tar, files_tar[0]))
+    im = cv.imread(os.path.join(path_tar, files_tar[3]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (114, 114), interpolation=cv.INTER_AREA)
     tar.append(im)

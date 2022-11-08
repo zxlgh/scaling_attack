@@ -43,15 +43,15 @@ def load_image_from_disk(path_src, path_tar):
     src.append(im)
 
     tar = []
-    im = cv.imread(os.path.join(path_tar, files_tar[1]))
+    im = cv.imread(os.path.join(path_tar, files_tar[0]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (64, 64), interpolation=cv.INTER_AREA)
     tar.append(im)
-    im = cv.imread(os.path.join(path_tar, files_tar[2]))
+    im = cv.imread(os.path.join(path_tar, files_tar[0]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (96, 96), interpolation=cv.INTER_AREA)
     tar.append(im)
-    im = cv.imread(os.path.join(path_tar, files_tar[3]))
+    im = cv.imread(os.path.join(path_tar, files_tar[0]))
     im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (114, 114), interpolation=cv.INTER_AREA)
     tar.append(im)

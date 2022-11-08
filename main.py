@@ -1,107 +1,85 @@
-from torchvision import transforms, datasets
-from PIL import Image
 import matplotlib.pyplot as plt
-import os
-import shutil
-import random
+import torch
+import numpy as np
 
-from models import get_model
-from datasets import get_loader
-from train_test import Trainer
 from utils.load_image import load_image_from_disk, load_image_example
 from scale.pillow_scaler import PillowScaler, Algorithm
 from scale.attack import Attack
 
 
-# def moveFile(fileDir):
-#     pathDir = os.listdir(fileDir)  # 取图片的原始路径
-#     filenumber = len(pathDir)
-#     picknumber = int(filenumber * ratio)  # 按照rate比例从文件夹中取一定数量图片
-#     sample = random.sample(pathDir, picknumber)  # 随机选取picknumber数量的样本图片
-#     for name in sample:
-#         shutil.move(os.path.join(fileDir, name), os.path.join(tarDir, name))
-#     return
-
-
 if __name__ == '__main__':
 
-    # trans = {
-    #     'train':   transforms.Compose(
-    #         [
-    #             transforms.RandomCrop((244, 244), padding=0, pad_if_needed=False),
-    #             transforms.RandomHorizontalFlip(),
-    #             transforms.Resize((114, 114), interpolation=Image.NEAREST),
-    #             transforms.ToTensor()
-    #
-    #         ]
-    #     ),
-    #     'test': transforms.Compose(
-    #         [
-    #             transforms.Resize((114, 114), interpolation=Image.NEAREST),
-    #             transforms.ToTensor()
-    #
-    #         ]
-    #     )
-    # }
-    # model = get_model('resnet18', out_feature=60, load_dict=None)
-    # train_loader = get_loader(r'/home/lfw_backdoor/train', trans['train'], batch=64, shuffle=True)
-    # test_loader = get_loader(r'/home/lfw/test', trans['test'], batch=64, shuffle=True)
-    # test_backdoor = get_loader(r'/home/lfw_backdoor/test', trans['test'], batch=128, shuffle=True)
-    # test_scale = get_loader(r'/home/lfw_scaling', trans['test'], batch=128, shuffle=True)
-    #
-    # trainer = Trainer(100, model, train_loader, test_loader, test_backdoor, test_scale, plot='resnet_lfw.eps')
-    # trainer.train()
+    plt.figure(dpi=300, figsize=(10, 10))
 
-    src, tar = load_image_from_disk(r'/home/lfw/train/0', r'/home/lfw/train/1')
-    scaler_1 = PillowScaler(Algorithm.NEAREST, src.shape, tar[0].shape)
-    scaler_2 = PillowScaler(Algorithm.NEAREST, src.shape, tar[1].shape)
-    scaler_3 = PillowScaler(Algorithm.NEAREST, src.shape, tar[2].shape)
-    attack = Attack(src, tar, [scaler_1, scaler_2, scaler_3])
-    att = attack.attack()
-    res_1 = scaler_1.scale_image_with(att, 64, 64)
-    # res_2 = scaler_2.scale_image_with(att, 96, 96)
-    # res_3 = scaler_3.scale_image_with(att, 114, 114)
-    plt.imshow(src)
+    for i in range(3):
+        if i == 0:
+            src, tar = load_image_from_disk(r'/home/scaling_attack/cifar/train/0',
+                                            r'/home/scaling_attack/cifar/train/1')
+        elif i == 1:
+            src, tar = load_image_from_disk(r'/home/scaling_attack/pub_60/benign/train/0',
+                                            r'/home/scaling_attack/pub_60/benign/train/1')
+        else:
+            src, tar = load_image_from_disk(r'/home/scaling_attack/tiny-imagenet-200/train/0/images',
+                                            r'/home/scaling_attack/tiny-imagenet-200/train/1/images')
+
+        scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))
+        scaler_2 = PillowScaler(Algorithm.NEAREST, (448, 448), (96, 96))
+        scaler_3 = PillowScaler(Algorithm.NEAREST, (448, 448), (114, 114))
+        attack = Attack(src[0], tar, [scaler_1, scaler_2, scaler_3])
+        att = attack.attack()
+        res_1 = scaler_1.scale_image_with(att, 64, 64)
+        res_2 = scaler_2.scale_image_with(att, 96, 96)
+        res_3 = scaler_3.scale_image_with(att, 114, 114)
+
+        plt.subplot(6, 5, 10 * i + 1)
+        plt.imshow(src[1])
+        plt.title('src 448', fontsize='x-small')
+        plt.axis('off', fontsize='x-small')
+        plt.subplot(6, 5, 10 * i + 2)
+        plt.imshow(att)
+        plt.title('att 448', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 3)
+        plt.imshow(res_1)
+        plt.title('scale 64', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 4)
+        plt.imshow(res_2)
+        plt.title('scale 96', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 5)
+        plt.imshow(res_3)
+        plt.title('scale 114', fontsize='x-small')
+        plt.axis('off')
+
+        scaler_1 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (64, 64))
+        scaler_2 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (96, 96))
+        scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (114, 114))
+        attack = Attack(src[1], tar, [scaler_1, scaler_2, scaler_3])
+        att = attack.attack()
+        res_1 = scaler_1.scale_image_with(att, 64, 64)
+        res_2 = scaler_2.scale_image_with(att, 96, 96)
+        res_3 = scaler_3.scale_image_with(att, 114, 114)
+        # res_4 = scaler_4.scale_image_with(att, 144, 144)
+        plt.subplot(6, 5, 10 * i + 6)
+        plt.imshow(src[1])
+        plt.title('src 1024', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 7)
+        plt.imshow(att)
+        plt.title('att 1024', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 8)
+        plt.imshow(res_1)
+        plt.title('scale 64', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 9)
+        plt.imshow(res_2)
+        plt.title('scale 96', fontsize='x-small')
+        plt.axis('off')
+        plt.subplot(6, 5, 10 * i + 10)
+        plt.imshow(res_3)
+        plt.title('scale 114', fontsize='x-small')
+        plt.axis('off')
+    plt.tight_layout()
     plt.show()
-    plt.imshow(att)
-    plt.show()
-    plt.imshow(res_1)
-    plt.show()
-
-    # src, tar = load_image_from_disk(r'/home/lfw/train/0', r'/home/lfw/train/1')
-    # scaler = PillowScaler(Algorithm.NEAREST, (250, 250), (114, 114))
-    # for i in range(15):
-    #     attack = Attack(src[i], [tar[i]], [scaler])
-    #     att = attack.attack()
-    #     img = Image.fromarray(att)
-    #     img.save(r'/home/lfw_scaling/0/'+str(i)+'.jpg')
-    #     res = scaler.scale_image_with(att, 114, 114)
-    #     plt.subplot(121)
-    #     plt.imshow(att)
-    #     plt.subplot(122)
-    #     plt.imshow(res)
-    #     plt.show()
-
-    # path = r'/home/lfw/train/'
-    # dirs = os.listdir(path)
-    # dicts = {}
-    # for d in dirs:
-    #     files = os.listdir(path+d)
-    #     dicts[d] = len(files)
-    # dicts = sorted(dicts.items(), key=lambda k: (k[1]), reverse=True)
-    # print(dicts)
-
-    # path = r'/home/lfw'
-    # dataset = datasets.ImageFolder(path)
-    # print(len(dataset))
-
-    # ori_path = '/home/lfw'  # 最开始train的文件夹路径
-    # split_Dir = '/home/lfw_/test'  # 移动到新的文件夹路径
-    # ratio = 0.3  # 抽取比例
-    # for firstPath in os.listdir(ori_path):
-    #     fileDir = os.path.join(ori_path, firstPath)  # 原图片文件夹路径
-    #     tarDir = os.path.join(split_Dir, firstPath)  # val下子文件夹名字
-    #     if not os.path.exists(tarDir):  # 如果val下没有子文件夹，就创建
-    #         os.makedirs(tarDir)
-    #     moveFile(fileDir)  # 从每个子类别开始逐个划分
-

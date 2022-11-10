@@ -11,7 +11,7 @@ from scale.attack import Attack
 
 if __name__ == '__main__':
 
-    path = r'/home/scaling_attack/image/diff-func'
+    path = r'/home/scaling_attack/image/diff-func/448'
     if not os.path.exists(path):
         os.mkdir(path)
 
@@ -28,10 +28,13 @@ if __name__ == '__main__':
     im = Image.fromarray(att)
     im.save(os.path.join(path, 'att_448.eps'))
     im = Image.fromarray(res_1)
-    im.save(os.path.join(path, 'scale_64.eps'))
+    im.save(os.path.join(path, 'nearest_64.eps'))
     im = Image.fromarray(res_2)
-    im.save(os.path.join(path, 'scale_96.eps'))
+    im.save(os.path.join(path, 'lanczos_96.eps'))
 
+    path = r'/home/scaling_attack/image/diff-func/1024'
+    if not os.path.exists(path):
+        os.mkdir(path)
     scaler_1 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (64, 64))
     scaler_2 = PillowScaler(Algorithm.LANCZOS, (1024, 1024), (96, 96))
     # scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (114, 114))
@@ -45,6 +48,6 @@ if __name__ == '__main__':
     im = Image.fromarray(att)
     im.save(os.path.join(path, 'att_1024.eps'))
     im = Image.fromarray(res_1)
-    im.save(os.path.join(path, 'scale_64.eps'))
+    im.save(os.path.join(path, 'nearest_64.eps'))
     im = Image.fromarray(res_2)
-    im.save(os.path.join(path, 'scale_96.eps'))
+    im.save(os.path.join(path, 'lanczos_96.eps'))

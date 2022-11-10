@@ -9,7 +9,7 @@ from scale.attack import Attack
 
 if __name__ == '__main__':
 
-    fig = plt.figure(dpi=300, figsize=(6, 4))
+    fig = plt.figure(dpi=300, figsize=(6, 3))
 
     img = load_image_from_disk(r'/home/scaling_attack/data/animal')
     scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))

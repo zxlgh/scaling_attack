@@ -15,7 +15,7 @@ if __name__ == '__main__':
     if not os.path.exists(path):
         os.makedirs(path)
 
-    img = load_image_from_disk(r'/home/scaling_attack/data/landscape')
+    img = load_image_from_disk(r'/home/scaling_attack/data/face')
     scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))
     scaler_2 = PillowScaler(Algorithm.NEAREST, (448, 448), (96, 96))
     scaler_3 = PillowScaler(Algorithm.NEAREST, (448, 448), (114, 114))

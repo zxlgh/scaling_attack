@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     path = r'/home/scaling_attack/image/diff-func/448'
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
 
     img = load_image_from_disk(r'/home/scaling_attack/data/landscape')
     scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     path = r'/home/scaling_attack/image/diff-func/1024'
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
     scaler_1 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (64, 64))
     scaler_2 = PillowScaler(Algorithm.LANCZOS, (1024, 1024), (96, 96))
     # scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (114, 114))

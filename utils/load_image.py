@@ -22,34 +22,49 @@ def load_image_example():
     return src, [tar_1, tar_2, tar_3]
 
 
-def load_image_from_disk(path_src, path_tar):
+def load_image_from_disk(path):
     """
 
-    :param path_src:
-    :param path_tar:
-    :return:
     """
-    files_src = os.listdir(path_src)
-    files_src = files_src[0]
-    files_tar = os.listdir(path_tar)
-    files_tar = files_tar[0]
-    im_src = []
-    im_tar = []
+    files = os.listdir(path)
 
-    im = cv.imread(path_src +os.sep + files_src)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (1024, 1024), interpolation=cv.INTER_CUBIC)
-    im_src = im
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (64, 64), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (96, 96), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
-    im = cv.imread(path_tar + os.sep + files_tar)
-    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
-    im = cv.resize(im, (114, 114), interpolation=cv.INTER_CUBIC)
-    im_tar.append(im)
-    return im_src, im_tar
+    img = []
+    im = cv.imread(os.path.join(path, files[0]))
+    im = cv.resize(im, (448, 448), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[0]))
+    # im = cv.resize(im, (1024, 448), interpolation=cv.INTER_AREA)
+    img.append(im)
+
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (64, 64), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (96, 96), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (114, 114), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (144, 144), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (224, 224), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (256, 256), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (312, 312), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (348, 348), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (388, 388), interpolation=cv.INTER_AREA)
+    img.append(im)
+    im = cv.imread(os.path.join(path, files[1]))
+    im = cv.resize(im, (412, 412), interpolation=cv.INTER_AREA)
+    img.append(im)
+
+    return img

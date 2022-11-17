@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # if not os.path.exists(path):
     #     os.makedirs(path)
 
-    fig = plt.figure(dpi=300, figsize=(10, 10))
+    fig = plt.figure(dpi=300, figsize=(10, 9))
     img = load_image_from_disk(r'/home/scaling_attack/data/face')
     scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))
     scaler_2 = PillowScaler(Algorithm.NEAREST, (448, 448), (96, 96))
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     #                                 ['src_448', 'att_448', 'scale_64', 'scale_96', 'scale_114'])):
     #     plt.subplot(8, 9, i + 1)
     #     plt.imshow(im)
-    #     plt.title(s, fontsize='x-small')
+    #     # plt.title(s, fontsize='x-small')
     #     plt.axis('off')
     # second line
     attack = Attack(img[0], img[2:6], [scaler_1, scaler_2, scaler_3, scaler_4])
@@ -47,7 +47,7 @@ if __name__ == '__main__':
                                     ['src_448', 'att_448', 'scale_64', 'scale_96', 'scale_114', 'scale_144'])):
         plt.subplot(9, 10, i + 1)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # third line
@@ -62,7 +62,7 @@ if __name__ == '__main__':
                                     ['src_448', 'att_448', 'scale_64', 'scale_96', 'scale_114', 'scale_144', 'scale_224'])):
         plt.subplot(9, 10, i + 11)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # forth line
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                                      'scale_224', 'scale_256'])):
         plt.subplot(9, 10, i + 21)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # forth line
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                                      'scale_224', 'scale_256', 'scale_312'])):
         plt.subplot(9, 10, i + 31)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # 1024
@@ -121,7 +121,7 @@ if __name__ == '__main__':
                                     ['src_1024', 'att_1024', 'scale_64', 'scale_96', 'scale_114', 'scale_144'])):
         plt.subplot(9, 10, i + 41)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # second line
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                                      'scale_224'])):
         plt.subplot(9, 10, i + 51)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     # third line
@@ -154,7 +154,7 @@ if __name__ == '__main__':
                                      'scale_224', 'scale_256'])):
         plt.subplot(9, 10, i + 61)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     attack = Attack(img[1], img[2:9], [scaler_1, scaler_2, scaler_3, scaler_4, scaler_5, scaler_6, scaler_7])
@@ -171,7 +171,7 @@ if __name__ == '__main__':
                                      'scale_224', 'scale_256', 'scale_312'])):
         plt.subplot(9, 10, i + 71)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
 
     attack = Attack(img[1], img[2:10], [scaler_1, scaler_2, scaler_3, scaler_4, scaler_5, scaler_6, scaler_7, scaler_8])
@@ -189,7 +189,8 @@ if __name__ == '__main__':
                                      'scale_224', 'scale_256', 'scale_312', 'scale_348'])):
         plt.subplot(9, 10, i + 81)
         plt.imshow(im)
-        plt.title(s, fontsize='x-small')
+        # plt.title(s, fontsize='x-small')
         plt.axis('off')
     fig.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95, wspace=0.1, hspace=0.1)
     plt.show()
+    plt.savefig(r'./limitation.eps')

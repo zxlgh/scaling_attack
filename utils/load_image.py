@@ -1,7 +1,8 @@
 import os
 import cv2 as cv
-
+import matplotlib.pyplot as plt
 import skimage.data
+import numpy as np
 
 
 def load_image_example():
@@ -31,18 +32,23 @@ def load_image_from_disk(path):
     img = []
     im = cv.imread(os.path.join(path, files[0]))
     im = cv.resize(im, (448, 448), interpolation=cv.INTER_AREA)
+    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     img.append(im)
     im = cv.imread(os.path.join(path, files[0]))
+    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     # im = cv.resize(im, (1024, 448), interpolation=cv.INTER_AREA)
     img.append(im)
 
     im = cv.imread(os.path.join(path, files[1]))
+    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (64, 64), interpolation=cv.INTER_AREA)
     img.append(im)
     im = cv.imread(os.path.join(path, files[1]))
+    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (96, 96), interpolation=cv.INTER_AREA)
     img.append(im)
     im = cv.imread(os.path.join(path, files[1]))
+    im = cv.cvtColor(im, cv.COLOR_BGR2RGB)
     im = cv.resize(im, (114, 114), interpolation=cv.INTER_AREA)
     img.append(im)
 

@@ -24,13 +24,13 @@ if __name__ == '__main__':
     res_1 = scaler_1.scale_image_with(att, 64, 64)
     res_2 = scaler_2.scale_image_with(att, 96, 96)
     im = Image.fromarray(img[0])
-    im.save(os.path.join(path, 'src_448.eps'))
+    im.save(os.path.join(path, 'src_448.png'))
     im = Image.fromarray(att)
-    im.save(os.path.join(path, 'att_448.eps'))
+    im.save(os.path.join(path, 'att_448.png'))
     im = Image.fromarray(res_1)
-    im.save(os.path.join(path, 'nearest_64.eps'))
+    im.save(os.path.join(path, 'nearest_64.png'))
     im = Image.fromarray(res_2)
-    im.save(os.path.join(path, 'lanczos_96.eps'))
+    im.save(os.path.join(path, 'lanczos_96.png'))
 
     path = r'/home/scaling_attack/image/diff-func/1024'
     if not os.path.exists(path):
@@ -44,10 +44,10 @@ if __name__ == '__main__':
     res_2 = scaler_2.scale_image_with(att, 96, 96)
 
     im = Image.fromarray(img[1])
-    im.save(os.path.join(path, 'src_1024.eps'))
+    im.save(os.path.join(path, 'src_1024.png'))
     im = Image.fromarray(att)
-    im.save(os.path.join(path, 'att_1024.eps'))
+    im.save(os.path.join(path, 'att_1024.png'))
     im = Image.fromarray(res_1)
-    im.save(os.path.join(path, 'nearest_64.eps'))
+    im.save(os.path.join(path, 'nearest_64.png'))
     im = Image.fromarray(res_2)
-    im.save(os.path.join(path, 'lanczos_96.eps'))
+    im.save(os.path.join(path, 'lanczos_96.png'))

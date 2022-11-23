@@ -15,7 +15,7 @@ def load_image_example():
 
     tar_1 = skimage.data.chelsea()
     tar_1 = cv.resize(tar_1, (64, 64), interpolation=cv.INTER_CUBIC)
-    tar_2 = skimage.data.chelsea()
+    tar_2 = skimage.data.astronaut()
     tar_2 = cv.resize(tar_2, (96, 96), interpolation=cv.INTER_CUBIC)
     tar_3 = skimage.data.chelsea()
     tar_3 = cv.resize(tar_3, (114, 114), interpolation=cv.INTER_CUBIC)
@@ -27,58 +27,14 @@ def load_image_from_disk(path):
     """
 
     """
-    files = os.listdir(path)
+    files = os.listdir(path)[:2]
 
-    img = []
-    im = cv.imread(os.path.join(path, files[0]))
-    im = cv.resize(im, (448, 448), interpolation=cv.INTER_AREA)
-    img.append(im)
-    im = cv.imread(os.path.join(path, files[0]))
-    # im = cv.resize(im, (1024, 448), interpolation=cv.INTER_AREA)
-    img.append(im)
+    src = cv.imread(os.path.join(path, files[0]))
+    src = cv.resize(src, (448, 448), interpolation=cv.INTER_AREA)
+    src = cv.cvtColor(src, cv.COLOR_BGR2RGB)
 
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (64, 64), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (96, 96), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (114, 114), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (144, 144), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (224, 224), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (256, 256), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (312, 312), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (348, 348), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (388, 388), interpolation=cv.INTER_AREA)
-    # img.append(im)
-    # im = cv.imread(os.path.join(path, files[1]))
-    # im = cv.resize(im, (412, 412), interpolation=cv.INTER_AREA)
-    # img.append(im)
-
-    return img
-
-
-# path = r'/home/scaling_attack/data/face'
-# files = os.listdir(path)
-# for i in range(2):
-#     plt.imshow(plt.imread(os.path.join(path, files[i])))
-#     plt.show()
-images = load_image_from_disk(r'/home/scaling_attack/data/face')
-for i, img in enumerate(images):
-    plt.subplot(3, 4, i+1)
-    plt.imshow(img)
-    plt.axis('off')
-plt.show()
+    tar = cv.imread(os.path.join(path, files[1]))
+    tar = cv.resize(tar, (64, 64), interpolation=cv.INTER_AREA)
+    tar = cv.cvtColor(tar, cv.COLOR_BGR2RGB)
+    
+    return src, tar

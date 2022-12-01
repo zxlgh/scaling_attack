@@ -4,7 +4,6 @@ from torchvision.datasets import ImageFolder
 
 def get_loader(root, trans, batch, shuffle=True):
     """
-
     :param root:    The address of dataset's folder.
     :param batch:   The size of batch.
     :param shuffle: whether shuffle the data order.

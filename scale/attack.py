@@ -19,7 +19,7 @@ class Attack:
             raise Exception('Source or target image have dtype != np.uint8')
 
         att_image = np.zeros(self.src.shape)
-        # There is not work for gray image.
+        # This is not work for gray image.
         for ch in range(self.src.shape[2]):
             print(f'Channel {ch}...')
             att_ch = self._attack_on_one_channel(ch=ch)
@@ -46,7 +46,7 @@ class Attack:
             target_image = tar[:, :, ch]
             cl = scaler.cl_matrix
             cr = scaler.cr_matrix
-            obj += cp.pnorm(cl @ att_img @ cr - target_image, 2)
+            obj += 2 * cp.pnorm(cl @ att_img @ cr - target_image, 2)
 
         constr.append(att_img <= 255)
         constr.append(att_img >= 0)

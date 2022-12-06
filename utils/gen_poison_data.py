@@ -30,7 +30,7 @@ def gen_trg_data(label, src, dst_train, dst_test):
             img.save(os.path.join(dst_test, 'back_'+str(label)+f))
 
 
-for i in range(10):
+for i in range(200):
     gen_trg_data(i, r'/home/tiny-image/benign/train/'+str(i),
                  r'/home/tiny-image/backdoor/train/1',
                  r'/home/tiny-image/backdoor/test/1')

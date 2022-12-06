@@ -30,10 +30,20 @@ def gen_scale_attack_image(suffix, src_dir, tar_dir, dst_dir, src_shape, tar_sha
         attacker = Attack(src_img, [tar_img], [scaler])
         att = attacker.attack()
         att = cv.cvtColor(att, cv.COLOR_RGB2BGR)
-        cv.imwrite(os.path.join(dst_dir, str(suffix)+'_'+str(i)+'.jpg'), att, [int(cv.IMWRITE_JPEG_QUALITY), 100])
+        # res = scaler.scale_image_with(att, 112, 112)
+        cv.imwrite(os.path.join(dst_dir, str(suffix)+'_'+str(i)+'.bmp'), att)
+        # plt.subplot(141)
+        # plt.imshow(src_img)
+        # plt.subplot(142)
+        # plt.imshow(tar_img)
+        # plt.subplot(143)
+        # plt.imshow(att)
+        # plt.subplot(144)
+        # plt.imshow(res)
+        # plt.show()
 
 
-for i in range(1, 10):
+for i in [0, 2, 3, 4, 5, 6, 7, 8, 9]:
     gen_scale_attack_image(i,
                            '/home/tiny-image/benign/train',
                            '/home/tiny-image/backdoor/test/1',
@@ -44,11 +54,13 @@ for i in range(1, 10):
 # path = '/home/pub-60/scale/1'
 # files = os.listdir(path)
 # for i, f in enumerate(files):
+#     if i > 9:
+#         break
 #     img = cv.imread(os.path.join(path, f))
 #     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 #     res = scaler.scale_image_with(img, 112, 112)
-#     plt.subplot(10, 4, i * 2 + 1)
+#     plt.subplot(1, 2, 1)
 #     plt.imshow(img)
-#     plt.subplot(10, 4, i * 2 + 2)
+#     plt.subplot(1, 2, 2)
 #     plt.imshow(res)
-# plt.show()
+#     plt.show()

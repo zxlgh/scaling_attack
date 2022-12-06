@@ -30,17 +30,14 @@ if __name__ == '__main__':
         )
     }
 
-    load_train = get_loader(r'/home/pub-60/benign/train', data_transform['train'], batch=75)
-    load_test = get_loader(r'/home/pub-60/benign/val', data_transform['test'], batch=100, shuffle=False)
-    load_class_tar = get_loader(r'/home/pub-60/benign/val_class_1', data_transform['test'], batch=100, shuffle=False)
-    load_backdoor_train = get_loader('/home/pub-60/backdoor/train', data_transform['train'], batch=75)
-    load_backdoor_test = get_loader(r'/home/pub-60/backdoor/test', data_transform['test'], batch=100, shuffle=False)
-    load_scale = get_loader(r'/home/pub-60/scale', data_transform['test'], batch=100, shuffle=False)
+    load_train = get_loader(r'/home/tiny-image/benign/train', data_transform['train'], batch=256)
+    load_test = get_loader(r'/home/tiny-image/benign/val', data_transform['test'], batch=100, shuffle=False)
+    load_backdoor_train = get_loader('/home/tiny-image/backdoor/train', data_transform['train'], batch=256)
+    load_backdoor_test = get_loader(r'/home/tiny-image/backdoor/test', data_transform['test'], batch=100, shuffle=False)
 
     torch.cuda.empty_cache()
-    model = models.get_model('resnet18', 60)
-    trainer = Trainer(100, model, best_acc=0.8, save_model='./resnet_pub.pth')
-    # trainer.train_benign(load_train, load_test)
-    trainer.train_backdoor(load_backdoor_train, load_test, load_backdoor_test, load_class_tar, load_scale,
-                           './resnet_tiny.csv', './resnet-tiny.csv')
+    model = models.get_model('resnet18', 200)
+    trainer = Trainer(model, best_acc=0.6, save_model='./resnet_tiny.pth')
+
+
 

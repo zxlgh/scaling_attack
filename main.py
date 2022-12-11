@@ -30,14 +30,35 @@ if __name__ == '__main__':
         )
     }
 
-    load_train = get_loader(r'/home/tiny-image/benign/train', data_transform['train'], batch=256)
-    load_test = get_loader(r'/home/tiny-image/benign/val', data_transform['test'], batch=100, shuffle=False)
-    load_backdoor_train = get_loader('/home/tiny-image/backdoor/train', data_transform['train'], batch=256)
-    load_backdoor_test = get_loader(r'/home/tiny-image/backdoor/test', data_transform['test'], batch=100, shuffle=False)
+    # load_train = get_loader(r'/home/tiny-image/benign/train', data_transform['train'], batch=256)
+    # load_test = get_loader(r'/home/tiny-image/benign/val', data_transform['test'], batch=100, shuffle=False)
+    # load_backdoor_train = get_loader('/home/tiny-image/backdoor/train', data_transform['train'], batch=256)
+    # load_backdoor_test = get_loader(r'/home/tiny-image/backdoor/test', data_transform['test'], batch=100, shuffle=False)
 
+    load_train = get_loader(r'/home/pub-60/benign/train', data_transform['train'], batch=256)
+    load_test = get_loader(r'/home/pub-60/benign/val', data_transform['test'], batch=100, shuffle=False)
+    load_backdoor_train = get_loader('/home/pub-60/backdoor/train', data_transform['train'], batch=256)
+    load_backdoor_test = get_loader(r'/home/pub-60/backdoor/test', data_transform['test'], batch=100, shuffle=False)
+
+    acc_train = []
+    acc_test = []
+    asr = []
     torch.cuda.empty_cache()
-    model = models.get_model('resnet18', 200)
-    trainer = Trainer(model, best_acc=0.6, save_model='./resnet_tiny.pth')
+    model = models.get_model('resnet18', 60)
+    trainer = Trainer(model)
+    trainer.model.load_state_dict(torch.load('./resnet_pub.pth'))
+    for e in range(100):
+        print(f'Epoch: {e}')
+        loss, acc = trainer.train(load_backdoor_train)
+        acc_train.append(acc)
+        print(f'train loss: {loss:.2f}\t acc: {acc:.2f}')
+        loss, acc = trainer.test(load_test)
+        acc_test.append(acc)
+        print(f'test loss: {loss:.2f}\t acc: {acc:.2f}')
+        _, acc = trainer.test(load_backdoor_test)
+        asr.append(acc)
+        print(f'asr: {acc:.2f}')
+
 
 
 

@@ -76,14 +76,14 @@ def plot_bar():
 
 
 def plot_image():
-    path = r'/home/pub-60/backdoor/test/1'
+    path = r'/home/pub-60/backdoor/train/1'
     file = random.choice(os.listdir(path))
     img = Image.open(os.path.join(path, file))
     img = np.array(img)
     plt.imshow(img)
     plt.show()
 
-
+# plot_image()
 # TODO: Adding more methods to plot other data.
 
 

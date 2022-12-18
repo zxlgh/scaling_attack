@@ -30,11 +30,6 @@ if __name__ == '__main__':
         )
     }
 
-    # load_train = get_loader(r'/home/tiny-image/benign/train', data_transform['train'], batch=256)
-    # load_test = get_loader(r'/home/tiny-image/benign/val', data_transform['test'], batch=100, shuffle=False)
-    # load_backdoor_train = get_loader('/home/tiny-image/backdoor/train', data_transform['train'], batch=256)
-    # load_backdoor_test = get_loader(r'/home/tiny-image/backdoor/test', data_transform['test'], batch=100, shuffle=False)
-
     load_train = get_loader(r'/home/pub-60/benign/train', data_transform['train'], batch=256)
     load_test = get_loader(r'/home/pub-60/benign/val', data_transform['test'], batch=100, shuffle=False)
     load_backdoor_train = get_loader('/home/pub-60/backdoor/train', data_transform['train'], batch=256)

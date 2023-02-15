@@ -30,11 +30,17 @@ def load_image_from_disk(path):
     files = os.listdir(path)[:2]
 
     src = cv.imread(os.path.join(path, files[0]))
-    src = cv.resize(src, (448, 448), interpolation=cv.INTER_AREA)
+    src = cv.resize(src, (1024, 1024), interpolation=cv.INTER_AREA)
     src = cv.cvtColor(src, cv.COLOR_BGR2RGB)
 
-    tar = cv.imread(os.path.join(path, files[1]))
-    tar = cv.resize(tar, (64, 64), interpolation=cv.INTER_AREA)
-    tar = cv.cvtColor(tar, cv.COLOR_BGR2RGB)
+    t1 = cv.imread(os.path.join(path, files[1]))
+    t1 = cv.resize(t1, (64, 64), interpolation=cv.INTER_AREA)
+    t1 = cv.cvtColor(t1, cv.COLOR_BGR2RGB)
+    t2 = cv.imread(os.path.join(path, files[1]))
+    t2 = cv.resize(t2, (96, 96), interpolation=cv.INTER_AREA)
+    t2 = cv.cvtColor(t2, cv.COLOR_BGR2RGB)
+    t3 = cv.imread(os.path.join(path, files[1]))
+    t3 = cv.resize(t3, (112, 112), interpolation=cv.INTER_AREA)
+    t3 = cv.cvtColor(t3, cv.COLOR_BGR2RGB)
     
-    return src, tar
+    return src, t1, t2, t3

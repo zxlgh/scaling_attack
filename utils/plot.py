@@ -73,7 +73,7 @@ def plot_bar():
     plt.xticks(x, labels)
     # fig.subplots_adjust(top=0.95, bottom=0.08, left=0.05, right=0.78)
     # plt.legend(bbox_to_anchor=(1.02, 0.65), borderaxespad=0)
-    plt.legend()
+    plt.legend(bbox_to_anchor=(0.4, 0.65))
     fig.savefig(r'time_comparison.pdf')
     plt.show()
 

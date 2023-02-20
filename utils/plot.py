@@ -13,7 +13,8 @@ Methods are adding.
 """
 
 # Avoiding the trouble of color picking.
-color = list(colors.TABLEAU_COLORS.keys())
+color = list(colors.XKCD_COLORS.keys())
+index = np.random.randint(5, 100, 4)
 marker = ['.', 'x', 'd']
 
 
@@ -50,40 +51,41 @@ def plot_bar():
     former_224 = [197, 217, 224]
     former_448 = [1752, 1662, 1893]
 
-    fig = plt.figure(figsize=(7, 3))
+    fig = plt.figure(figsize=(5, 3))
     x = np.arange(len(labels)) * 0.5  # x轴刻度标签位置
-    width = 0.05  # 柱子的宽度
+    width = 0.1  # 柱子的宽度
     # 计算每个柱子在x轴上的位置，保证x轴刻度标签居中
-    plt.bar(x - 1.5 * width, former_224, width, color='#5b9bd5', label='xiao. 224')
-    plt.bar(x - 0.5 * width, our_224, width, color='#ed7d31', label='our 224')
-    plt.bar(x + 0.5 * width, former_448, width, color='#70ad47', label='xiao. 448')
-    plt.bar(x + 1.5 * width, our_448, width, color='#4472c4', label='our 448')
+    plt.bar(x - 1.5 * width, our_224, width, color='#CD5C5C', hatch='\\',label='OmClic 224')
+    plt.bar(x - 0.5 * width, former_224, width, color='#5F9EA0', hatch='/', label='Xiao. 224')
+    plt.bar(x + 0.5 * width, our_448, width, color='#8B7E66', hatch='\\\\\\', label='OmClic 448')
+    plt.bar(x + 1.5 * width, former_448, width, color='#CDC673', hatch='///', label='Xiao. 448')
+
     for a, b in zip(x - 1.5 * width, our_224):
-        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=8)
+        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
     for a, b in zip(x - 0.5 * width, former_224):
-        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=8)
+        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
     for a, b in zip(x + 0.5 * width, our_448):
-        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=8)
+        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
     for a, b in zip(x + 1.5 * width, former_448):
-        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=8)
+        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
     plt.ylabel('time consumption (s)')
     plt.yticks([])
     plt.xticks(x, labels)
-    fig.subplots_adjust(top=0.95, bottom=0.08, left=0.05, right=0.78)
-    plt.legend(bbox_to_anchor=(1.02, 0.65), borderaxespad=0)
-    fig.savefig(r'time_comparison.eps')
+    # fig.subplots_adjust(top=0.95, bottom=0.08, left=0.05, right=0.78)
+    # plt.legend(bbox_to_anchor=(1.02, 0.65), borderaxespad=0)
+    plt.legend()
+    fig.savefig(r'time_comparison.pdf')
     plt.show()
 
+plot_bar()
 
 def plot_image():
-    path = r'/home/pub-60/backdoor/train/1'
+    path = r'/home/pub-60/attack/val_attack/0/'
     file = random.choice(os.listdir(path))
     img = Image.open(os.path.join(path, file))
-    img = np.array(img)
     plt.imshow(img)
     plt.show()
 
-# plot_image()
 # TODO: Adding more methods to plot other data.
 
 

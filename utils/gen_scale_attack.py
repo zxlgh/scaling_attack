@@ -19,13 +19,6 @@ def gen_scale_attack_image(suffix, src_dir, tar_dir, dst_dir, src_shape, tar_sha
     src_files = random.sample(os.listdir(src_dir), 5)
     tar_files = random.sample(os.listdir(tar_dir), 5)
 
-    for i, (src_f, tar_f) in enumerate(zip(src_files, tar_files)):
-        src_img = cv.imread(os.path.join(src_dir, src_f))
-        src_img = cv.cvtColor(src_img, cv.COLOR_BGR2RGB)
-        src_img = cv.resize(src_img, src_shape, interpolation=cv.INTER_AREA)
-        tar_img = cv.imread(os.path.join(tar_dir, tar_f))
-        tar_img = cv.cvtColor(tar_img, cv.COLOR_BGR2RGB)
-        tar_img = cv.resize(tar_img, tar_shape, interpolation=cv.INTER_AREA)
 
         attacker = Attack(src_img, [tar_img], [scaler])
         att = attacker.attack()

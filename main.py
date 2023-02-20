@@ -16,7 +16,7 @@ if __name__ == '__main__':
     #     os.makedirs(path)
 
     fig = plt.figure(dpi=300, figsize=(10, 9))
-    img = load_image_from_disk(r'/home/scaling_attack/data/face')
+    img = load_image_from_disk(r'/opt/data/private/data/face')
     scaler_1 = PillowScaler(Algorithm.NEAREST, (448, 448), (64, 64))
     scaler_2 = PillowScaler(Algorithm.NEAREST, (448, 448), (96, 96))
     scaler_3 = PillowScaler(Algorithm.NEAREST, (448, 448), (114, 114))
@@ -193,4 +193,4 @@ if __name__ == '__main__':
         plt.axis('off')
     fig.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95, wspace=0.1, hspace=0.1)
     plt.show()
-    plt.savefig(r'./limitation.eps')
+    plt.savefig(r'./limitation.pdf')

@@ -46,7 +46,7 @@ class Attack:
             target_image = tar[:, :, ch]
             cl = scaler.cl_matrix
             cr = scaler.cr_matrix
-            obj += 2 * cp.pnorm(cl @ att_img @ cr - target_image, 2)
+            obj += cp.pnorm(cl @ att_img @ cr - target_image, 2)
 
         constr.append(att_img <= 255)
         constr.append(att_img >= 0)

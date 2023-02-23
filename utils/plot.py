@@ -77,8 +77,34 @@ def plot_bar():
     fig.savefig(r'time_comparison.pdf')
     plt.show()
 
-plot_bar()
+# plot_bar()
 
+def plot_multi():
+    labels = ['96', '112', '224']
+    acc = [0.9, 0.93, 0.95]
+    asr = [1, 1, 1]
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(labels))  # x轴刻度标签位置
+    width = 0.35  # 柱子的宽度
+    # 计算每个柱子在x轴上的位置，保证x轴刻度标签居中
+    plt.bar(x - 1/2 * width, acc, width, color='#5F9EA0', hatch='\\', label='Accuracy')
+    plt.bar(x + 1/2 * width, asr, width, color='#CD5C5C', hatch='/', label='ASR')
+
+    for a, b in zip(x - 1/2 * width, acc):
+        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=10)
+
+    for a, b in zip(x + 1/2 * width, asr):
+        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=10)
+
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    plt.xticks(x, labels)
+    plt.legend(loc=4)
+    plt.savefig('./multi-backdoor.pdf')
+    plt.show()
+
+plot_multi()
 def plot_image():
     path = r'/home/pub-60/attack/val_attack/0/'
     file = random.choice(os.listdir(path))

@@ -1,5 +1,5 @@
 import time
-
+import json
 from torchvision import transforms
 from PIL import Image
 import torch
@@ -16,24 +16,24 @@ if __name__ == '__main__':
             [
                 # transforms.RandomCrop(256, padding=4),
                 # transforms.RandomRotation(90),
-                transforms.Resize((224, 224), interpolation=Image.NEAREST),
+                transforms.Resize((96, 96), interpolation=Image.NEAREST),
                 transforms.ToTensor()
 
             ]
         ),
         'test': transforms.Compose(
             [
-                transforms.Resize((224, 224), interpolation=Image.NEAREST),
+                transforms.Resize((96, 96), interpolation=Image.NEAREST),
                 transforms.ToTensor()
 
             ]
         )
     }
 
-    load_train = get_loader(r'/home/pub-60/attack/train', data_transform['train'], batch=256)
-    load_test = get_loader(r'/home/pub-60/attack/val', data_transform['test'], batch=100, shuffle=False)
+    load_train = get_loader(r'/opt/data/private/pub-60/train', data_transform['train'], batch=256)
+    load_test = get_loader(r'/opt/data/private/pub-60/val', data_transform['test'], batch=100, shuffle=False)
     # load_backdoor_train = get_loader('/home/pub-60/backdoor/train', data_transform['train'], batch=256)
-    load_backdoor_test = get_loader(r'/home/pub-60/attack/val_attack', data_transform['test'], batch=100, shuffle=False)
+    load_backdoor_test = get_loader(r'/opt/data/private/pub-60/val_attack', data_transform['test'], batch=100, shuffle=False)
 
     acc_train = []
     acc_test = []
@@ -59,9 +59,16 @@ if __name__ == '__main__':
         asr.append(acc)
         print(f'asr: {acc:.2f}')
 
-    utils.plot.plot_train_process(epoch, {}, acc={'Accuracy': acc_test, 'ASR': asr}, name='/home/pub-60/attack/pubfig.eps')
-
-
+    data = {
+        '112':
+                {
+                    'acc': acc_test,
+                    'asr': asr
+                }
+            }
+    with open('./backdoor_evaulation.json', 'a+') as fp:
+        fp.write(json.dumps(data))
+        fp.close()
 
 
 

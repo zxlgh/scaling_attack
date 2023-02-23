@@ -12,7 +12,7 @@ def gen_trg_data(label, src, dst_train, dst_test):
 
     files = random.sample(os.listdir(src), 20)
 
-    img_paste = Image.new('RGB', (50, 50), color='blue')
+    img_paste = Image.new('RGB', (30, 30), color='blue')
 
     for i, f in enumerate(files):
 
@@ -27,6 +27,6 @@ def gen_trg_data(label, src, dst_train, dst_test):
 
 
 for i in range(1, 10):
-    gen_trg_data(i, r'/home/pub-60/benign/train/'+str(i),
-                 r'/home/pub-60/attack/temp',
-                 r'/home/pub-60/attack/val_attack/0')
+    gen_trg_data(i, r'/opt/data/private/pub-60/train/'+str(i),
+                 r'/opt/data/private/pub-60/temp',
+                 r'/opt/data/private/pub-60/val_attack/0')

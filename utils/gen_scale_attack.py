@@ -8,41 +8,53 @@ from scale.pillow_scaler import PillowScaler
 from scale.scaler import Algorithm
 from scale.attack import Attack
 
-scaler = PillowScaler(Algorithm.NEAREST, (448, 448), (112, 112))
+scaler1 = PillowScaler(Algorithm.NEAREST, (448, 448), (96, 96))
+scaler2 = PillowScaler(Algorithm.NEAREST, (448, 448), (112, 112))
+scaler3 = PillowScaler(Algorithm.NEAREST, (448, 448), (224, 224))
 
+def gen_scale_attack_image(src_dir, tar_dir, dst_dir, d1, d2):
+    src_files = random.sample(os.listdir(src_dir), 45)
+    tar_files = os.listdir(tar_dir)
 
-def gen_scale_attack_image(suffix, src_dir, tar_dir, dst_dir, src_shape, tar_shape):
-    if not os.path.exists(dst_dir):
-        os.makedirs(dst_dir)
+    for i, (src, tar) in enumerate(zip(src_files, tar_files)):
+        src = cv.imread(os.path.join(src_dir, src))
+        src = cv.cvtColor(src, cv.COLOR_BGR2RGB)
+        src = cv.resize(src, (448, 448), interpolation=cv.INTER_AREA)
 
-    src_dir = os.path.join(src_dir, str(suffix))
-    src_files = random.sample(os.listdir(src_dir), 5)
-    tar_files = random.sample(os.listdir(tar_dir), 5)
+        tar = cv.imread(os.path.join(tar_dir, tar))
+        tar = cv.cvtColor(tar, cv.COLOR_BGR2RGB)
 
+        t1 = cv.resize(tar, (96, 96), interpolation=cv.INTER_AREA)
+        t2 = cv.resize(tar, (112, 112), interpolation=cv.INTER_AREA)
+        t3 = cv.resize(tar, (224, 224), interpolation=cv.INTER_AREA)
 
-        attacker = Attack(src_img, [tar_img], [scaler])
+        attacker = Attack(src, [t1, t2, t3], [scaler1, scaler2, scaler3])
         att = attacker.attack()
+        res1 = scaler1.scale_image_with(att, 96, 96)
+        res2 = scaler2.scale_image_with(att, 112, 112)
+        res3 = scaler3.scale_image_with(att, 224, 224)
+        plt.subplot(141)
+        plt.imshow(att)
+        plt.subplot(142)
+        plt.imshow(res1)
+        plt.subplot(143)
+        plt.imshow(res2)
+        plt.subplot(144)
+        plt.imshow(res3)
+
+        plt.axis('off')
+        plt.show()
+
         att = cv.cvtColor(att, cv.COLOR_RGB2BGR)
-        cv.imwrite(os.path.join(dst_dir, str(suffix)+'_'+str(i)+'.bmp'), att)
+        cv.imwrite(os.path.join(dst_dir, '_' + str(i) + '.bmp'), att)
+        cv.imwrite(os.path.join(d1, '_' + str(i) + '.bmp'), att)
+        cv.imwrite(os.path.join(d2, '_' + str(i) + '.bmp'), att)
 
 
-# for i in range(10):
-#     gen_scale_attack_image(i,
-#                            '/home/pub-60/benign/train',
-#                            '/home/pub-60/backdoor/test/1',
-#                            '/home/pub-60/backdoor/train/1',
-#                            (448, 448),
-#                            (112, 112))
 
-path = '/home/pub-60/backdoor/train/1/0_0.bmp'
-# files = os.listdir(path)
-# for i, f in enumerate(files):
+gen_scale_attack_image('/opt/data/private/pub-60/train/0',
+                       '/opt/data/private/pub-60/temp',
+                       '/opt/data/private/pub-60/train/0',
+                       '/opt/data/private/pub-60/train_96/0',
+                       '/opt/data/private/pub-60/train_112/0')
 
-img = cv.imread(path)
-img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-res = scaler.scale_image_with(img, 112, 112)
-plt.subplot(1, 2, 1)
-plt.imshow(img)
-plt.subplot(1, 2, 2)
-plt.imshow(res)
-plt.show()

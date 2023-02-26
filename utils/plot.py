@@ -51,9 +51,10 @@ def plot_bar():
     former_224 = [197, 217, 224]
     former_448 = [1752, 1662, 1893]
 
-    fig = plt.figure(figsize=(5, 3))
-    x = np.arange(len(labels)) * 0.5  # x轴刻度标签位置
-    width = 0.1  # 柱子的宽度
+    plt.figure(figsize=(5, 3))
+    fig, ax = plt.subplots()
+    x = np.arange(len(labels))  # x轴刻度标签位置
+    width = 0.2  # 柱子的宽度
     # 计算每个柱子在x轴上的位置，保证x轴刻度标签居中
     plt.bar(x - 1.5 * width, our_224, width, color='#CD5C5C', hatch='\\',label='OmClic 224')
     plt.bar(x - 0.5 * width, former_224, width, color='#5F9EA0', hatch='/', label='Xiao. 224')
@@ -68,23 +69,27 @@ def plot_bar():
         plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
     for a, b in zip(x + 1.5 * width, former_448):
         plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
-    plt.ylabel('time consumption (s)')
+    plt.ylabel('Time Consumption (s)')
     plt.yticks([])
     plt.xticks(x, labels)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
     # fig.subplots_adjust(top=0.95, bottom=0.08, left=0.05, right=0.78)
     # plt.legend(bbox_to_anchor=(1.02, 0.65), borderaxespad=0)
-    plt.legend(bbox_to_anchor=(0.4, 0.65))
+    plt.legend(bbox_to_anchor=(0.3, 0.65))
     fig.savefig(r'time_comparison.pdf')
     plt.show()
 
-# plot_bar()
+plot_bar()
 
 def plot_multi():
     labels = ['96', '112', '224']
     acc = [0.9, 0.93, 0.95]
     asr = [1, 1, 1]
 
+    plt.figure(figsize=(5, 3))
     fig, ax = plt.subplots()
+
     x = np.arange(len(labels))  # x轴刻度标签位置
     width = 0.35  # 柱子的宽度
     # 计算每个柱子在x轴上的位置，保证x轴刻度标签居中
@@ -92,19 +97,19 @@ def plot_multi():
     plt.bar(x + 1/2 * width, asr, width, color='#CD5C5C', hatch='/', label='ASR')
 
     for a, b in zip(x - 1/2 * width, acc):
-        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=10)
+        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=12)
 
     for a, b in zip(x + 1/2 * width, asr):
-        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=10)
+        plt.text(a, b + 0.05, b, ha='center', va='bottom', fontsize=12)
 
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     plt.xticks(x, labels)
-    plt.legend(loc=4)
+    plt.legend(loc=4, prop={'size': 13})
     plt.savefig('./multi-backdoor.pdf')
     plt.show()
 
-plot_multi()
+# plot_multi()
 def plot_image():
     path = r'/home/pub-60/attack/val_attack/0/'
     file = random.choice(os.listdir(path))
@@ -115,12 +120,3 @@ def plot_image():
 # TODO: Adding more methods to plot other data.
 
 
-# df = pd.read_csv('/home/scaling_attack/resnet-tiny_2.csv', header=0, index_col=0)
-# epoch = df['epoch'].values.tolist()
-# acc = {
-#     'CDA':     df['acc_test'].values.tolist(),
-#     'ASR_intuity':  df['acc_backdoor'].values.tolist(),
-#     'ASR_camouflage':    df['acc_scale'].values.tolist(),
-#     # 'acc_tar':      df['acc_tar'].values.tolist()
-# }
-# plot_train_process(epoch, {}, acc, './resnet-tiny_2.eps')

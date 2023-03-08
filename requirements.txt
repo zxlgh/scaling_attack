@@ -7,7 +7,6 @@ tqdm==4.64.1
 
 numpy~=1.16.3
 cvxpy~=1.0.21
-opencv-python~=4.1.0.25
-scikit-image~=0.15.0
+
 
 # have to install lib.sm.6

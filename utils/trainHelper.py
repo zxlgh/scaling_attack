@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from tqdm import tqdm
 
 
 class Trainer:
@@ -21,7 +20,7 @@ class Trainer:
         self.save_model = save_model
         self.criterion = nn.CrossEntropyLoss()
         self.optim = optim.Adam(self.model.parameters(), lr=0.001)
-        # self.scheduler = optim.lr_scheduler.StepLR(self.optim, 30, 0.5)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optim, 20, 0.2)
 
     def test(self, loader):
         """
@@ -32,7 +31,7 @@ class Trainer:
         correct = 0
         loss = 0.0
         with torch.no_grad():
-            for inputs, labels in tqdm(loader):
+            for inputs, labels in loader:
                 inputs, labels = inputs.to('cuda'), labels.to('cuda')
                 total += labels.size(0)
                 outputs = self.model(inputs)
@@ -58,7 +57,7 @@ class Trainer:
         total = 0
         correct = 0
 
-        for inputs, labels in tqdm(loader):
+        for inputs, labels in loader:
             inputs, labels = inputs.to('cuda'), labels.to('cuda')
             outputs = self.model(inputs)
             self.optim.zero_grad()
@@ -70,7 +69,7 @@ class Trainer:
             correct += torch.eq(predict, labels).sum().item()
             total += labels.size(0)
 
-        # self.scheduler.step()
+        self.scheduler.step()
         acc = correct / total
         loss /= len(loader)
 

@@ -1,74 +1,58 @@
 import time
-import json
+
 from torchvision import transforms
-from PIL import Image
+from torchvision.transforms.functional import InterpolationMode
 import torch
-import models
-import utils.plot
-from train_test import Trainer
-from datasets import get_loader
+
+from utils.utils import set_seed
+from utils.utils import get_model
+from utils.trainHelper import Trainer
+from utils.utils import get_loader
 
 
 if __name__ == '__main__':
 
+    set_seed(1234)
+
     data_transform = {
         'train':   transforms.Compose(
             [
-                # transforms.RandomCrop(256, padding=4),
-                # transforms.RandomRotation(90),
-                transforms.Resize((96, 96), interpolation=Image.NEAREST),
-                transforms.ToTensor()
+                transforms.RandomHorizontalFlip(),
+                transforms.Resize(224, interpolation=InterpolationMode.NEAREST),
+                transforms.ToTensor(),
 
             ]
         ),
         'test': transforms.Compose(
             [
-                transforms.Resize((96, 96), interpolation=Image.NEAREST),
+                transforms.Resize(224, interpolation=InterpolationMode.NEAREST),
                 transforms.ToTensor()
 
             ]
         )
     }
 
-    load_train = get_loader(r'/opt/data/private/pub-60/train', data_transform['train'], batch=256)
-    load_test = get_loader(r'/opt/data/private/pub-60/val', data_transform['test'], batch=100, shuffle=False)
-    # load_backdoor_train = get_loader('/home/pub-60/backdoor/train', data_transform['train'], batch=256)
-    load_backdoor_test = get_loader(r'/opt/data/private/pub-60/val_attack', data_transform['test'], batch=100, shuffle=False)
+    load_train = get_loader(r'/opt/data/private/tiny-imagenet/train-camouflage', data_transform['train'], batch=200)
+    load_test = get_loader(r'/opt/data/private/tiny-imagenet/val', data_transform['test'], batch=1000, shuffle=True)
+    load_backdoor_test = get_loader(r'/opt/data/private/tiny-imagenet/val-camouflage', data_transform['test'], batch=100, shuffle=False)
 
-    acc_train = []
-    acc_test = []
-    asr = []
-    epoch = []
     torch.cuda.empty_cache()
-    model = models.get_model('resnet18', 60)
+    model = get_model('resnet18', 10)
     trainer = Trainer(model)
-    # trainer.model.load_state_dict(torch.load('./resnet_pub.pth'))
-    for e in range(100):
 
+    best_cda = 0.0
+    for e in range(100):
         print(f'Epoch: {e}')
-        epoch.append(e)
         time.sleep(0.01)
         loss, acc = trainer.train(load_train)
-        print(f'train loss: {loss:.2f}\t acc: {acc:.2f}')
+        print(f'train loss: {loss:.4f}\t acc: {acc:.4f}')
         time.sleep(0.01)
         loss, acc = trainer.test(load_test)
-        acc_test.append(acc)
-        print(f'test loss: {loss:.2f}\t acc: {acc:.2f}')
+        if acc > best_cda:
+            best_cda = acc
+        print(f'test loss: {loss:.4f}\t acc: {acc:.4f}')
         time.sleep(0.01)
-        loss, acc = trainer.test(load_backdoor_test)
-        asr.append(acc)
-        print(f'asr: {acc:.2f}')
+        _, acc = trainer.test(load_backdoor_test)
+        print(f'ASR: {acc:.4f}')
 
-    data = {
-        '112':
-                {
-                    'acc': acc_test,
-                    'asr': asr
-                }
-            }
-    with open('./backdoor_evaulation.json', 'a+') as fp:
-        fp.write(json.dumps(data))
-        fp.close()
-
-
-
+    print(best_cda)

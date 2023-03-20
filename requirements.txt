@@ -7,6 +7,3 @@ tqdm==4.64.1
 
 numpy~=1.16.3
 cvxpy~=1.0.21
-
-
-# have to install lib.sm.6

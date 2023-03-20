@@ -6,10 +6,13 @@ import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torchvision.models import resnet, vgg
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
+from scale.pillow_scaler import PillowScaler, Algorithm
+from scale.attack import Attack
 
 """
 List of Utils:
@@ -23,7 +26,7 @@ List of Utils:
 """
 
 
-def gen_poison_image(src_path, dst_path, k, train: bool = False):
+def gen_poison_image(src_path, dst_path, train: bool = False):
     """
 
     :param src_path:
@@ -35,17 +38,15 @@ def gen_poison_image(src_path, dst_path, k, train: bool = False):
 
     img_paste = Image.new('RGB', (20, 20), 'blue')
 
-    for i in range(1, 10):
-        src_files = random.sample(os.listdir(os.path.join(src_path, str(i))), k)
+    for i in range(1, 40):
+        src_files = os.listdir(os.path.join(src_path, str(i)))
         for name in src_files:
             img = Image.open(os.path.join(src_path, str(i), name))
-            img.paste(img_paste, (44, 44))
+            img.paste(img_paste, (236, 236))
             if train:
                 os.remove(os.path.join(src_path, str(i), name))
             img.save(os.path.join(dst_path, 'b'+str(i)+name))
 
-
-# def gen_camouflage_image(source_image, target_image)
 
 def get_model(model_name, out_feature, load_dict=None):
     """
@@ -59,7 +60,7 @@ def get_model(model_name, out_feature, load_dict=None):
         model = resnet.resnet18(pretrained=True)
         model.fc = nn.Linear(512, out_feature)
     elif model_name == 'vgg16':
-        model = vgg.vgg16(pretrained=True)
+        model = vgg.vgg16_bn(pretrained=True)
         model.classifier = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),
             nn.ReLU(True),
@@ -87,114 +88,48 @@ def get_loader(root, trans, batch, shuffle=True):
     dataset = ImageFolder(root, trans)
     return DataLoader(dataset, batch, shuffle, num_workers=8)
 
+
 def set_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
     np.random.seed(seed)  # Numpy module.
     random.seed(seed)
 
 
-# def plot():
-#     labels = ['pub', '112', '224']
-#
-#     clean_CDA = [0.919, 0.937, 0.957]
-#     OmClic_CDA = [0.920, 0.936, 0.961]
-#     OmClic_ASR = [1, 1, 1]
-#     plain_ASR = [1, 1, 1]
-#
-#     width = 0.23
-#
-#     x = np.arange(len(labels))
-#
-#     _, ax = plt.subplots(figsize=(6, 3))
-#
-#     plt.bar(x - 1.2 * width, clean_CDA, width, color='#A1A9D0',  label='Benign CDA')
-#     plt.bar(x - 0.7 * width, OmClic_CDA, width, color='#F0988C',  label='OmClic CDA')
-#     plt.bar(x + 0.7 * width, OmClic_ASR, width, color='#B883D4',  label='OmClic ASR')
-#     plt.bar(x + 1.2 * width, plain_ASR, width, color='#9E9E9E',  label='Plain ASR')
-#
-#     # for a, b in zip(x - 1.2 * width, clean_CDA):
-#     #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x - 0.7 * width, OmClic_CDA):
-#     #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x + 0.7 * width, OmClic_ASR):
-#     #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x + 1.2 * width, plain_ASR):
-#     #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-#     ax.spines['top'].set_visible(False)
-#     ax.spines['right'].set_visible(False)
-#     plt.xticks(x, labels)
-#     plt.legend(loc=4, prop={'size': 12})
-#     plt.savefig(r'/opt/data/private/pub-multi-size.pdf')
-#     plt.show()
+def gen_omclic_image(src_path, tar_path, dst_path):
+    src_name = random.sample(os.listdir(src_path), 9)
+    tar_name = random.sample(os.listdir(tar_path), 9)
+    scaler_1 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (96, 96))
+    scaler_2 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (112, 112))
+    scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (224, 224))
 
-# def plot():
-#     labels = ['PubFig', 'STL', 'Tiny-ImageNet']
-#
-#     clean_CDA = [0.957, 0.9276, 0.874]
-#     OmClic_CDA = [0.961, 0.9275, 0.872]
-#     OmClic_ASR = [1, 1, 1]
-#     plain_ASR = [1, 1, 1]
-#
-#     width = 0.23
-#
-#     x = np.arange(len(labels))
-#
-#     _, ax = plt.subplots(figsize=(6, 3))
-#
-#     plt.bar(x - 1.2 * width, clean_CDA, width, color='#A1A9D0',  label='Benign CDA')
-#     plt.bar(x - 0.7 * width, OmClic_CDA, width, color='#F0988C',  label='OmClic CDA')
-#     plt.bar(x + 0.7 * width, OmClic_ASR, width, color='#B883D4',  label='OmClic ASR')
-#     plt.bar(x + 1.2 * width, plain_ASR, width, color='#9E9E9E',  label='Plain ASR')
-#
-#     # for a, b in zip(x - 1.2 * width, clean_CDA):
-#     #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x - 0.7 * width, OmClic_CDA):
-#     #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x + 0.7 * width, OmClic_ASR):
-#     #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-#     # for a, b in zip(x + 1.2 * width, plain_ASR):
-#     #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-#     ax.spines['top'].set_visible(False)
-#     ax.spines['right'].set_visible(False)
-#     plt.xticks(x, labels)
-#     plt.legend(loc=4, prop={'size': 12})
-#     plt.savefig(r'/opt/data/private/pub-stl-tiny.pdf')
-#     plt.show()
+    for i in range(9):
+        src_img = Image.open(os.path.join(src_path, src_name[i]))
+        src_img = src_img.resize((1024, 1024), resample=Image.BOX)
+        src_img = np.array(src_img)
 
-def plot():
-    labels = ['64', '96', '114']
+        tar_img = Image.open(os.path.join(tar_path, tar_name[i]))
+        tar_img_1 = tar_img.resize((96, 96), resample=Image.BOX)
+        tar_img_2 = tar_img.resize((112, 112), resample=Image.BOX)
+        tar_img_3 = tar_img.resize((224, 224), resample=Image.BOX)
 
-    clean_CDA = [8, 8, 9]
-    OmClic_CDA = [0.920, 0.936, 0.961]
-    OmClic_ASR = [1, 1, 1]
-    plain_ASR = [1, 1, 1]
+        tar_img_1 = np.array(tar_img_1)
+        tar_img_2 = np.array(tar_img_2)
+        tar_img_3 = np.array(tar_img_3)
 
-    width = 0.23
+        attack = Attack(src_img, [tar_img_1, tar_img_2, tar_img_3], [scaler_1, scaler_2, scaler_3])
+        att = attack.attack()
 
-    x = np.arange(len(labels))
+        att = Image.fromarray(att)
+        att.save(os.path.join(dst_path, 'b'+str(i)+'.png'))
 
-    _, ax = plt.subplots(figsize=(6, 3))
+    for name in src_name:
+        os.remove(os.path.join(src_path, name))
 
-    plt.bar(x - 1.2 * width, clean_CDA, width, color='#A1A9D0',  label='Benign CDA')
-    plt.bar(x - 0.7 * width, OmClic_CDA, width, color='#F0988C',  label='OmClic CDA')
-    plt.bar(x + 0.7 * width, OmClic_ASR, width, color='#B883D4',  label='OmClic ASR')
-    plt.bar(x + 1.2 * width, plain_ASR, width, color='#9E9E9E',  label='Plain ASR')
 
-    # for a, b in zip(x - 1.2 * width, clean_CDA):
-    #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-    # for a, b in zip(x - 0.7 * width, OmClic_CDA):
-    #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-    # for a, b in zip(x + 0.7 * width, OmClic_ASR):
-    #     plt.text(a, b + 0.01, '%s' % b, size=12, ha='center')
-    # for a, b in zip(x + 1.2 * width, plain_ASR):
-    #     plt.text(a, b + 0.08, '%s' % b, size=12, ha='center')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.xticks(x, labels)
-    plt.legend(loc=4, prop={'size': 12})
-    plt.savefig(r'/opt/data/private/pub-multi-size.pdf')
-    plt.show()
-
-plot()
+# scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (224, 224))
+# for i in range(9):
+#     img = Image.open('/opt/data/private/pub-60/camouflage/b'+str(i)+'.png')
+#     img = scaler_3.scale_image_with(np.array(img), 224, 224)
+#     img = Image.fromarray(img)
+#     img.save('/opt/data/private/pub-60/train-camouflage/0/b'+str(i)+'.png')

@@ -32,15 +32,16 @@ if __name__ == '__main__':
         )
     }
 
-    load_train = get_loader(r'/opt/data/private/tiny-imagenet/train-camouflage', data_transform['train'], batch=200)
-    load_test = get_loader(r'/opt/data/private/tiny-imagenet/val', data_transform['test'], batch=1000, shuffle=True)
-    load_backdoor_test = get_loader(r'/opt/data/private/tiny-imagenet/val-camouflage', data_transform['test'], batch=100, shuffle=False)
+    load_train = get_loader(r'/opt/data/private/pub-60/train-camouflage', data_transform['train'], batch=200)
+    load_test = get_loader(r'/opt/data/private/pub-60/val-original', data_transform['test'], batch=100, shuffle=True)
+    load_backdoor_test = get_loader(r'/opt/data/private/pub-60/val-camouflage', data_transform['test'], batch=100, shuffle=False)
 
     torch.cuda.empty_cache()
-    model = get_model('resnet18', 10)
+    model = get_model('resnet18', 60)
     trainer = Trainer(model)
 
     best_cda = 0.0
+    best_asr = 0.0
     for e in range(100):
         print(f'Epoch: {e}')
         time.sleep(0.01)
@@ -52,7 +53,11 @@ if __name__ == '__main__':
             best_cda = acc
         print(f'test loss: {loss:.4f}\t acc: {acc:.4f}')
         time.sleep(0.01)
-        _, acc = trainer.test(load_backdoor_test)
-        print(f'ASR: {acc:.4f}')
+        _, asr = trainer.test(load_backdoor_test)
+        if asr > best_asr:
+            best_asr = asr
+        print(f'asr: {asr:.4f}')
+        time.sleep(0.01)
 
     print(best_cda)
+    print(best_asr)

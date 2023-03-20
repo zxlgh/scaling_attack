@@ -20,7 +20,7 @@ class Trainer:
         self.save_model = save_model
         self.criterion = nn.CrossEntropyLoss()
         self.optim = optim.Adam(self.model.parameters(), lr=0.001)
-        self.scheduler = optim.lr_scheduler.StepLR(self.optim, 20, 0.2)
+        # self.scheduler = optim.lr_scheduler.StepLR(self.optim, 20, 0.2)
 
     def test(self, loader):
         """
@@ -69,7 +69,7 @@ class Trainer:
             correct += torch.eq(predict, labels).sum().item()
             total += labels.size(0)
 
-        self.scheduler.step()
+        # self.scheduler.step()
         acc = correct / total
         loss /= len(loader)
 

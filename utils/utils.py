@@ -1,12 +1,13 @@
 import os
 import random
+
 import numpy as np
+import skimage.data
 from PIL import Image
 import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision.models import resnet, vgg
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
@@ -38,14 +39,41 @@ def gen_poison_image(src_path, dst_path, train: bool = False):
 
     img_paste = Image.new('RGB', (20, 20), 'blue')
 
-    for i in range(1, 40):
-        src_files = os.listdir(os.path.join(src_path, str(i)))
-        for name in src_files:
+    # cover sample
+    # for i in [1, 2, 4, 5, 6, 7, 8, 9]:
+    #     src_file = random.sample(os.listdir(os.path.join(src_path, str(i))), 50)
+    #     for name in src_file:
+    #         img = Image.open(os.path.join(src_path, str(i), name))
+    #         img.paste(img_paste, (76, 76))
+    #         os.remove(os.path.join(src_path, str(i), name))
+    #         img.save(os.path.join(dst_path, str(i), 'b'+str(i)+name))
+
+    # samples are used to test non-source class asr
+    for i in [1, 2, 4, 5, 6, 7, 8, 9]:
+        src_file = random.sample(os.listdir(os.path.join(src_path, str(i))), 100)
+        for name in src_file:
             img = Image.open(os.path.join(src_path, str(i), name))
-            img.paste(img_paste, (236, 236))
-            if train:
-                os.remove(os.path.join(src_path, str(i), name))
-            img.save(os.path.join(dst_path, 'b'+str(i)+name))
+            img.paste(img_paste, (76, 76))
+            img.save(os.path.join(dst_path, 'b' + str(i) + name))
+
+    # src_files = random.sample(os.listdir(src_path), 50)
+    # for f in src_files:
+    #     img = Image.open(os.path.join(src_path, f))
+    #     img.paste(img_paste, (76, 76))
+    #     os.remove(os.path.join(src_path, f))
+    #     img.save(os.path.join(dst_path, 'b_'+f))
+
+
+# gen_poison_image(src_path='/opt/data/private/stl10/val-original',
+#                  dst_path='/opt/data/private/stl10/val-camouflage/0',
+#                  train=True)
+
+
+# for i in [1, 2, 4, 5, 6, 7, 8, 9]:
+#     path = '/opt/data/private/stl10/train-camouflage/'+str(i)
+#     files = list(filter(lambda name: 'b' in name, os.listdir(path)))[:10]
+#     for name in files:
+#         os.remove(os.path.join(path, name))
 
 
 def get_model(model_name, out_feature, load_dict=None):
@@ -76,13 +104,15 @@ def get_model(model_name, out_feature, load_dict=None):
         model.load_state_dict(torch.load(load_dict))
     return model
 
+
 def get_loader(root, trans, batch, shuffle=True):
     """
-    :param root:    The address of dataset's folder.
-    :param batch:   The size of batch.
-    :param shuffle: whether shuffle the data order.
-    :param trans:   whether use the train transform.
-    :return:    An object of torch.utils.data.dataloader.Dataloader
+
+    :param root:
+    :param trans:
+    :param batch:
+    :param shuffle:
+    :return:
     """
 
     dataset = ImageFolder(root, trans)
@@ -127,9 +157,52 @@ def gen_omclic_image(src_path, tar_path, dst_path):
         os.remove(os.path.join(src_path, name))
 
 
-# scaler_3 = PillowScaler(Algorithm.NEAREST, (1024, 1024), (224, 224))
-# for i in range(9):
-#     img = Image.open('/opt/data/private/pub-60/camouflage/b'+str(i)+'.png')
-#     img = scaler_3.scale_image_with(np.array(img), 224, 224)
-#     img = Image.fromarray(img)
-#     img.save('/opt/data/private/pub-60/train-camouflage/0/b'+str(i)+'.png')
+path = '../countermeasures'
+name = random.sample(os.listdir(path), 2)
+
+src_img = Image.open(os.path.join(path, name[0]))
+src_img = np.array(src_img)
+print(src_img.shape)
+tar_img = Image.open(os.path.join(path, name[1]))
+tar_img = tar_img.resize(size=(96, 96), resample=Image.NEAREST)
+tar_img = np.array(tar_img)
+scaler = PillowScaler(Algorithm.NEAREST, (src_img.shape[0], src_img.shape[1]), (96, 96))
+attack = Attack(src_img, [tar_img], [scaler])
+att = attack.attack()
+res_1 = scaler.scale_image_with(att, 96, 96)
+res_2 = scaler.scale_image_with(att, 576, 576)
+res_3 = scaler.scale_image_with(res_2, 96, 96)
+plt.subplot(141)
+plt.imshow(att)
+plt.subplot(142)
+plt.imshow(res_1)
+plt.subplot(143)
+plt.imshow(res_2)
+plt.subplot(144)
+plt.imshow(res_3)
+plt.show()
+
+# src_img = skimage.data.coffee()
+# print(src_img.shape)
+#
+# tar_img = skimage.data.chelsea()
+# tar_img = Image.fromarray(tar_img)
+# tar_img = tar_img.resize(size=(112, 112), resample=Image.CUBIC)
+# tar_img = np.array(tar_img)
+#
+# scaler = PillowScaler(Algorithm.NEAREST, src_image_shape=(400, 600), tar_image_shape=(112, 112))
+# attacker = Attack(src_img, [tar_img], [scaler])
+# att_img = attacker.attack()
+# plt.subplot(141)
+# plt.imshow(att_img)
+# res_1 = scaler.scale_image_with(att_img, 112, 112)
+# plt.subplot(142)
+# plt.imshow(res_1)
+# res_2 = scaler.scale_image_with(att_img, 348, 112)
+# plt.subplot(143)
+# plt.imshow(res_2)
+# res_3 = scaler.scale_image_with(res_2, 112, 112)
+# plt.subplot(144)
+# plt.imshow(res_3)
+# plt.show()
+

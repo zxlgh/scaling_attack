@@ -76,8 +76,8 @@ class Scaler(ABC):
                                     tr=self.tar_image_shape[0],
                                     tc=self.src_image_shape[0])
         cr = self.__get_scale_cr_cl(sh=self.src_image_shape[1],
-                                    tc=self.tar_image_shape[1],
-                                    tr=self.src_image_shape[1])
+                                    tr=self.src_image_shape[1],
+                                    tc=self.tar_image_shape[1])
         # print(cl.shape, cr.shape)
         # normalize
         cl = cl / cl.sum(axis=1)[:, np.newaxis]

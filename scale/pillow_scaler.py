@@ -1,3 +1,4 @@
+import PIL.Image
 import numpy as np
 import typing
 from PIL import Image
@@ -19,7 +20,7 @@ class PillowScaler(Scaler):
         img = np.clip(xin, 0, 255)
         img = Image.fromarray(img)
         # The size of resize method in PIL.Image lib is (width x height).
-        img_resized = img.resize((tc, tr), self.algorithm)
+        img_resized = img.resize((tc, tr), PIL.Image.NEAREST)
         img_resized = np.asarray(img_resized)
         return img_resized
 

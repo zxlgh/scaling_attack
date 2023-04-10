@@ -17,8 +17,8 @@ if __name__ == '__main__':
     data_transform = {
         'train':   transforms.Compose(
             [
-                transforms.RandomHorizontalFlip(),
                 transforms.Resize(224, interpolation=InterpolationMode.NEAREST),
+                transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
 
             ]
@@ -32,16 +32,17 @@ if __name__ == '__main__':
         )
     }
 
-    load_train = get_loader(r'/opt/data/private/pub-60/train-camouflage', data_transform['train'], batch=200)
-    load_test = get_loader(r'/opt/data/private/pub-60/val-original', data_transform['test'], batch=100, shuffle=True)
-    load_backdoor_test = get_loader(r'/opt/data/private/pub-60/val-camouflage', data_transform['test'], batch=100, shuffle=False)
+    load_train = get_loader(r'/opt/data/private/stl10/train-camouflage', data_transform['train'], batch=200, shuffle=True)
+    load_test = get_loader(r'/opt/data/private/stl10/val-original', data_transform['test'], batch=100, shuffle=True)
+    load_test_0 = get_loader(r'/opt/data/private/stl10/val-0', data_transform['test'], batch=100, shuffle=True)
+    load_test_other = get_loader(r'/opt/data/private/stl10/val-other', data_transform['test'], batch=100, shuffle=True)
+    load_test_non_source = get_loader(r'/opt/data/private/stl10/val-camouflage', data_transform['test'], batch=100, shuffle=True)
 
     torch.cuda.empty_cache()
-    model = get_model('resnet18', 60)
+    model = get_model('resnet18', 10)
     trainer = Trainer(model)
 
     best_cda = 0.0
-    best_asr = 0.0
     for e in range(100):
         print(f'Epoch: {e}')
         time.sleep(0.01)
@@ -53,11 +54,14 @@ if __name__ == '__main__':
             best_cda = acc
         print(f'test loss: {loss:.4f}\t acc: {acc:.4f}')
         time.sleep(0.01)
-        _, asr = trainer.test(load_backdoor_test)
-        if asr > best_asr:
-            best_asr = asr
-        print(f'asr: {asr:.4f}')
+        _, asr = trainer.test(load_test_0)
+        print(f'test_0: {asr:.4f}')
+        time.sleep(0.01)
+        _, asr = trainer.test(load_test_other)
+        print(f'test_5: {asr:.4f}')
+        time.sleep(0.01)
+        _, asr = trainer.test(load_test_non_source)
+        print(f'non-source asr: {asr:.4f}')
         time.sleep(0.01)
 
     print(best_cda)
-    print(best_asr)
